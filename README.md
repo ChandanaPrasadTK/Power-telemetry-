@@ -14,34 +14,54 @@ You need the following tools installed on your system:
 Create a Python script to monitor the telemetry data.
 
 python
+
 import psutil
+
 import time
+
 import docker
 
 def get_telemetry():
+
     telemetry = {
+    
         'cpu': psutil.cpu_percent(interval=1),
+        
         'memory': psutil.virtual_memory().percent,
+        
         'nic': psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv,
+       
         'tdp': psutil.sensors_temperatures().get('coretemp', [])[0].current if 'coretemp' in psutil.sensors_temperatures() else 'N/A'
+    
     }
+  
     return telemetry
 
 def run_container_load(utilization):
+
     client = docker.from_env()
+    
     container = client.containers.run("stress", f"--cpu 1 --io 1 --vm 1 --vm-bytes {utilization}% -t 60s", detach=True)
+    
     return container
 
 def monitor_system(utilization):
+
     container = run_container_load(utilization)
+    
     while container.status != 'exited':
+    
         telemetry = get_telemetry()
+        
         print(f"Telemetry Data: {telemetry}")
+        
         time.sleep(5)  # Adjust the sleep time as per requirement
         container.reload()
 
 if __name__ == "__main__":
+
     utilization = int(input("Enter the percentage of system utilization: "))
+    
     monitor_system(utilization)
 
 
@@ -50,22 +70,29 @@ if __name__ == "__main__":
 Create a Dockerfile to build an image that generates load. We'll use the stress tool for this.
 
 Dockerfile
+
 FROM alpine:latest
+
 RUN apk add --no-cache stress
+
 ENTRYPOINT ["stress"]
 
 
 Build the Docker image:
+
 sh
+
 docker build -t stress .
 
 
 ### Step 4: Running the Solution
 
 1. Ensure Docker is running.
-2. Run the Python script.
+2. 
+3. Run the Python script.
 
 sh
+
 python monitor_system.py
 
 
