@@ -83,8 +83,4 @@ python monitor_system.py
    - The monitor_system function continuously monitors the system telemetry while the container is running.
    - The script prints telemetry data every 5 seconds until the load container exits.
 
-### Notes
 
-- Ensure your system supports the psutil.sensors_temperatures method. Otherwise, modify the code to exclude TDP monitoring if not supported.
-- Adjust the stress parameters in the run_container_load function to meet specific load requirements.
-- This is a basic implementation; consider adding error handling and logging for production use.
